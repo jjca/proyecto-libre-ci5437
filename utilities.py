@@ -76,11 +76,11 @@ def createValidOptionsForEachCell(celdas):
     return cells
 
 
-def createRestrictions(celdas):
+""" def createRestrictions(celdas):
     # Para cada celda no puede repetirse un numero
     for y in range(1,10):
         for z in range(1,10):
-            for x in range
+            for x in range """
 
 """ def createGames(number_players,number_days,number_hours):
     games = []
