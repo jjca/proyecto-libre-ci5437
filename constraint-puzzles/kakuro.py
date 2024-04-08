@@ -23,10 +23,10 @@ def load_kakuro(filename):
     lines = [i.split('#')[0].strip() for i in str_in.split('\n')]
     cells = [[j.strip().replace('_','') for j in i.split('|')] 
                                         for i in lines if '|' in i]
-    
     cols = len(cells[0])
     rows = len(cells)
-    
+    # Cada cage es un elemento que tiene en su primera coord la suma
+    # y el segundo es un array con las celdas que deben cumplir dicha suma
     cages = []
     for i, line in enumerate(cells):
         for j, ijtxt in enumerate(line):
@@ -53,8 +53,10 @@ def kakuro(cages):
     with timeme('Setup time:'):
         solver = pywrapcp.Solver(__file__)
         cells = {}
-
         for i, (num, block) in enumerate(cages):
+            # i es el indice en el array cage
+            # num es la suma total del bloque
+            # block es el conjunto de celdas que deben sumar num
             for i,j in block:
                 cells[i,j] = solver.IntVar(1,9,'x(%d,%d)'%(i,j))
 
@@ -62,11 +64,11 @@ def kakuro(cages):
 
             #solver.Sum not working
             #solver.Add([solver.Sum(cells[i,j] for i,j in block]) == num)
+            # Agrega la restricción de las sumas de cada celda == num
             pycode = ("solver.Add(" + " + ".join("cells[%d,%d]"%(i,j) for i,j in block) + " == %d) "%num)
             exec(pycode)
 
             solver.Add(solver.AllDifferent([cells[i,j] for i,j in block]))
-
 
         cells_flat = [cells[i] for i in cells]
         db= solver.Phase(
