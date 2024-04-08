@@ -27,6 +27,10 @@ Cada archivo tiene un tablero de Kakuro en blanco, y el formato del tablero es e
   - Las líneas horizontales se separan con `---+----`. 
   - Las celdas con espacios en blanco son celdas válidas para introducir valores.
 
+## Ejemplo de ejecución
+
+```python3 main.py constraint-puzzles/kakuro-collection/kakuro-grandgames.net-23104.txt```
+
 ## Resolver Sudoku
 
 El caso del Sudoku es equivalente al de Kakuro.
@@ -37,3 +41,6 @@ Para los archivos de prueba de Sudoku, cada línea es un tablero, de forma que c
 
 El número 0 representa un espacio en blanco, mientras que los números 1 al 9 representan valores de pista ya indicados al inicio.
 
+## Ejemplo de ejecución
+
+ ```python3 main.py constraint-puzzles/sudoku-collection/gordon-royle-sudoku-17-entries.txt```
