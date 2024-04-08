@@ -74,8 +74,6 @@ def solveKakuro(file):
                         if cells[i][jj].strip()=='':
                             cages[-1][-1].append((i,jj))
                         else: break
-    #print(cages)
-
     blank_cells = {}
     for i, (num,block) in enumerate(cages):
         for i,j in block:
@@ -86,18 +84,17 @@ def solveKakuro(file):
             cells_c.append(z3.And(1 <= blank_cells[i,j], blank_cells[i,j] <= 9))
     all_different = []
 
-    for i, (num,block) in enumerate(cages):
-        for i,j in block:
-            all_different.append(z3.Distinct(blank_cells[i,j]))
+    all_different = [ z3.Distinct([blank_cells[i,j] for i,j in block]) for i, (num,block) in enumerate(cages)]
 
 
+    #cols_c = [ z3.Distinct([X[i][j] for i in range(9)]) for j in range(9)]
     f = z3.Function('f',z3.IntSort())
     x = z3.Int('x')
     sums_c = []
         #pycode = ("solver.Add(" + " + ".join("cells[%d,%d]"%(i,j) for i,j in block) + " == %d) "%num)
         
         #sums_c = [z3.ForAll([x],(blank_cells[i,j] for i,j in block) == num)]
-    sums_c = [z3.ForAll([x],z3.Sum([blank_cells[i,j] for i,j in block]) == num) for i, (num,block) in enumerate(cages)]
+    sums_c = [z3.ForAll([x],z3.Sum([blank_cells[i,j] for i,j in block]) == num) for k, (num,block) in enumerate(cages)]
 
     #for i, (num,block) in enumerate(cages):
      #   for i,j in block:
@@ -129,7 +126,6 @@ def solveKakuro(file):
 
     sq_c = [ z3.Distinct( [X[3*i0+i][3*j0+j] for i in range(3) for j in range (3)])
             for i0 in range(3) for j0 in range(3)] """
-    
     kakuro_c = sums_c + all_different + cells_c
 
     """ str_in = open(file).read()
@@ -162,15 +158,17 @@ def solveKakuro(file):
     #print(s.dimacs())
     #s.push()
     #s.add(instance_c)
-
-    #print(s)
+    
     if s.check() == z3.sat:
         m = s.model()
 
-        r = [ [m.evaluate(blank_cells[block]) for i, (num,block) in enumerate(cages)]
-               for i,j in block]
+        r = [ [m.evaluate(blank_cells[i,j]) for i,j in block]
+               for i, (num,block) in enumerate(cages)]
         z3.print_matrix(r)
     print(r)
+
+    for i in range(0,len(r),24):
+        print(r[i:24+i])
 
 if __name__ == '__main__':
     if len(sys.argv) < 1:
