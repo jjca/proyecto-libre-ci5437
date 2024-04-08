@@ -2,50 +2,56 @@ import z3
 import sys
 
 def solveSudoku(file):
-    X = [ [ z3.Int("x_%s_%s" % (i+1, j+1)) for j in range(9) ] 
-      for i in range(9) ]
-    #print(X)
-    cells_c = []
-    for i in range(9):
-        for j in range(9):
-            cells_c.append(z3.And(1 <= X[i][j], X[i][j] <= 9))
-    #cells_c = [ z3.And(1 <= X[i][j], X[i][j] <= 9) for i in range(9) for j in range(9)]
-    
-    rows_c = []
-    for i in range(9):
-        rows_c.append(z3.Distinct(X[i]))
-
-    # Revisar xd
-    cols_c = [ z3.Distinct([X[i][j] for i in range(9)]) for j in range(9)]
-    
-    sq_c = [ z3.Distinct( [X[3*i0+i][3*j0+j] for i in range(3) for j in range (3)])
-            for i0 in range(3) for j0 in range(3)]
-    
-    sudoku_c = cols_c + sq_c + rows_c + cells_c
-
     str_in = open(file).read()
-    instance = ()
-    numbers = []
-    for i in range(0,len(str_in)):
-        numbers.append(str_in[i])
-
-    for i in range(len(numbers)):
-        numbers[i] = int(numbers[i])
-    for i in range(0,len(numbers),9):
-        instance=instance+(tuple((numbers[i:i+9])),)
+    lines = [i.split('#')[0].strip() for i in str_in.split('\n')]
     
-    instance_c = [ z3.If(instance[i][j] == 0, True, X[i][j] == instance[i][j]) 
-                for i in range(9) for j in range(9)]
-    
-    s = z3.Solver()
-    s.add(sudoku_c + instance_c)
+    for line in lines:
+        if line == "":
+            break
+        else: 
+            X = [ [ z3.Int("x_%s_%s" % (i+1, j+1)) for j in range(9) ] 
+            for i in range(9) ]
+            #print(X)
+            cells_c = []
+            for i in range(9):
+                for j in range(9):
+                    cells_c.append(z3.And(1 <= X[i][j], X[i][j] <= 9))
+            #cells_c = [ z3.And(1 <= X[i][j], X[i][j] <= 9) for i in range(9) for j in range(9)]
+            
+            rows_c = []
+            for i in range(9):
+                rows_c.append(z3.Distinct(X[i]))
 
-    if s.check() == z3.sat:
-        m = s.model()
-        #print(m)
-        r = [ [ m.evaluate(X[i][j]) for j in range(9) ]
-                for i in range(9)]
-        z3.print_matrix(r)
+            # Revisar xd
+            cols_c = [ z3.Distinct([X[i][j] for i in range(9)]) for j in range(9)]
+            
+            sq_c = [ z3.Distinct( [X[3*i0+i][3*j0+j] for i in range(3) for j in range (3)])
+                    for i0 in range(3) for j0 in range(3)]
+            
+            sudoku_c = cols_c + sq_c + rows_c + cells_c
+
+            instance = ()
+            numbers = []
+            for i in range(0,len(line)):
+                numbers.append(line[i])
+            
+            for i in range(len(numbers)):
+                numbers[i] = int(numbers[i])
+            for i in range(0,len(numbers),9):
+                instance=instance+(tuple((numbers[i:i+9])),)
+            
+            instance_c = [ z3.If(instance[i][j] == 0, True, X[i][j] == instance[i][j]) 
+                        for i in range(9) for j in range(9)]
+            
+            s = z3.Solver()
+            s.add(sudoku_c + instance_c)
+
+            if s.check() == z3.sat:
+                m = s.model()
+                #print(m)
+                r = [ [ m.evaluate(X[i][j]) for j in range(9) ]
+                        for i in range(9)]
+                z3.print_matrix(r)
 
 def solveKakuro(file):
     str_in = open(file).read()
@@ -176,6 +182,6 @@ if __name__ == '__main__':
         exit(1)
     
     print("Hola, se usara el solver Z3")
-    solveKakuro(sys.argv[1])
+    solveSudoku(sys.argv[1])
 
 
