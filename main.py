@@ -165,10 +165,10 @@ def solveKakuro(file):
         r = [ [m.evaluate(blank_cells[i,j]) for i,j in block]
                for i, (num,block) in enumerate(cages)]
         z3.print_matrix(r)
-    print(r)
+    
 
-    for i in range(0,len(r),24):
-        print(r[i:24+i])
+    #for i in range(0,len(r),24):
+    #    print(r[i:24+i])
 
 if __name__ == '__main__':
     if len(sys.argv) < 1:
