@@ -53,8 +53,93 @@ def solveSudoku(file):
                         for i in range(9)]
                 z3.print_matrix(r)
 
+def solveFutoshiki(file):
+    str_in = open(file).read()
+    lines = []
+    s = z3.Solver()
+    x = 0
+    cells = []
+    symbols = []
+    for line in str_in.split('\n'):
+        if not line.strip():
+            continue
+        if line[0] == '|':
+            for y,col in enumerate(line[1:].split('|')[:-1]):
+                content = col.strip()
+                c = z3.Int("x_%sy_%s" % (x, y))
+                if content != '' and ('<' in content or '>' in content):
+                    symbols.append(((x,y-1),content[0],(x,y)))
+                    if content[1:] != '':
+                        s.add(c==int(content[1:]))
+                elif content != '':
+                    s.add(c==int(content))
+                cells.append(c)
+            x +=1
+        elif line[0] == '-':
+            for y,col in enumerate(line[1:].split('-')[:-1]):
+                content = col.strip()
+                if content != '':
+                    symbols.append(((x-1,y),content,(x,y)))
+        
+    size = x
+    cells_c = []
+    #Restriccion: Todos los elementos deben estar entre 1 y el tamano del tablero
+    for i in cells:
+        cells_c.append(z3.And(1 <= i, i <= size))
+
+
+
+    for line in lines:
+        if line == "":
+            break
+        else: 
+            X = [ [ z3.Int("x_%s_%s" % (i+1, j+1)) for j in range(9) ] 
+            for i in range(9) ]
+            #print(X)
+            cells_c = []
+            for i in range(9):
+                for j in range(9):
+                    cells_c.append(z3.And(1 <= X[i][j], X[i][j] <= 9))
+            #cells_c = [ z3.And(1 <= X[i][j], X[i][j] <= 9) for i in range(9) for j in range(9)]
+            
+            rows_c = []
+            for i in range(9):
+                rows_c.append(z3.Distinct(X[i]))
+
+            # Revisar xd
+            cols_c = [ z3.Distinct([X[i][j] for i in range(9)]) for j in range(9)]
+            
+            sq_c = [ z3.Distinct( [X[3*i0+i][3*j0+j] for i in range(3) for j in range (3)])
+                    for i0 in range(3) for j0 in range(3)]
+            
+            sudoku_c = cols_c + sq_c + rows_c + cells_c
+
+            instance = ()
+            numbers = []
+            for i in range(0,len(line)):
+                numbers.append(line[i])
+            
+            for i in range(len(numbers)):
+                numbers[i] = int(numbers[i])
+            for i in range(0,len(numbers),9):
+                instance=instance+(tuple((numbers[i:i+9])),)
+            
+            instance_c = [ z3.If(instance[i][j] == 0, True, X[i][j] == instance[i][j]) 
+                        for i in range(9) for j in range(9)]
+            
+            s = z3.Solver()
+            s.add(sudoku_c + instance_c)
+
+            if s.check() == z3.sat:
+                m = s.model()
+                #print(m)
+                r = [ [ m.evaluate(X[i][j]) for j in range(9) ]
+                        for i in range(9)]
+                z3.print_matrix(r)
+
 def solveKakuro(file):
     str_in = open(file).read()
+
     lines = [i.split('#')[0].strip() for i in str_in.split('\n')]
     cells = [[j.strip().replace('_','') for j in i.split('|')] 
                                         for i in lines if '|' in i]
@@ -182,6 +267,6 @@ if __name__ == '__main__':
         exit(1)
     
     print("Hola, se usara el solver Z3")
-    solveSudoku(sys.argv[1])
+    solveFutoshiki(sys.argv[1])
 
 
