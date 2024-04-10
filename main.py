@@ -257,15 +257,30 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print("Missing Argument")
         exit(1)
-        
-    print("Hola, se usara el solver Z3")
-    if sys.argv[1] == "-s":
-        solveSudoku(sys.argv[2])
-    elif sys.argv[1] == "-k":
-        solveKakuro(sys.argv[2])
-    elif sys.argv[1] == "-f":
-        solveFutoshiki(sys.argv[2])
-
-
-
-
+            
+    if (sys.argv[1].lower() == "-k"):
+        print("quieres ejecutar Kakuru")
+        try:
+            file = open(sys.argv[2])
+            file.close()
+            solveKakuro(sys.argv[2])
+        except:
+            raise FileNotFoundError()
+    elif (sys.argv[1].lower() == "-s"):
+        print("Quieres ejecutar Sudoku")
+        try:
+            file = open(sys.argv[2])
+            file.close()
+            solveKakuro(sys.argv[2])
+        except:
+            raise FileNotFoundError()
+    elif (sys.argv[1].lower() == "-f"):
+        print("Quieres ejecutar FUTOSHIKI-SAMAAAAA")
+        try:
+            file = open(sys.argv[2])
+            file.close()
+            solveKakuro(sys.argv[2])
+        except:
+            raise FileNotFoundError()
+    else: 
+        print("Error en los argumentos")
