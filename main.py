@@ -87,55 +87,47 @@ def solveFutoshiki(file):
     for i in cells:
         cells_c.append(z3.And(1 <= i, i <= size))
 
+    row_res = []
+    rows = []
+    for i in range(size):
+        curr_row = []
+        for j in range(size):
+            curr_row.append(cells[i * size + j])
+        rows.append(curr_row)
 
+    for row in rows:
+        row_res.append(z3.Distinct(row))
 
-    for line in lines:
-        if line == "":
-            break
-        else: 
-            X = [ [ z3.Int("x_%s_%s" % (i+1, j+1)) for j in range(9) ] 
-            for i in range(9) ]
-            #print(X)
-            cells_c = []
-            for i in range(9):
-                for j in range(9):
-                    cells_c.append(z3.And(1 <= X[i][j], X[i][j] <= 9))
-            #cells_c = [ z3.And(1 <= X[i][j], X[i][j] <= 9) for i in range(9) for j in range(9)]
-            
-            rows_c = []
-            for i in range(9):
-                rows_c.append(z3.Distinct(X[i]))
+    col_res = []
+    cols = []
+    for j in range(size):
+        curr_col = []
+        for i in range(size):
+            curr_col.append(cells[i * size + j])
+        cols.append(curr_col)
 
-            # Revisar xd
-            cols_c = [ z3.Distinct([X[i][j] for i in range(9)]) for j in range(9)]
-            
-            sq_c = [ z3.Distinct( [X[3*i0+i][3*j0+j] for i in range(3) for j in range (3)])
-                    for i0 in range(3) for j0 in range(3)]
-            
-            sudoku_c = cols_c + sq_c + rows_c + cells_c
+    for col in cols:
+        col_res.append(z3.Distinct(col))
 
-            instance = ()
-            numbers = []
-            for i in range(0,len(line)):
-                numbers.append(line[i])
-            
-            for i in range(len(numbers)):
-                numbers[i] = int(numbers[i])
-            for i in range(0,len(numbers),9):
-                instance=instance+(tuple((numbers[i:i+9])),)
-            
-            instance_c = [ z3.If(instance[i][j] == 0, True, X[i][j] == instance[i][j]) 
-                        for i in range(9) for j in range(9)]
-            
-            s = z3.Solver()
-            s.add(sudoku_c + instance_c)
+    for condition in symbols:
+        first = cells[condition[0][0] * size + condition[0][1]]
+        second = cells[condition[2][0] * size + condition[2][1]]
 
-            if s.check() == z3.sat:
-                m = s.model()
-                #print(m)
-                r = [ [ m.evaluate(X[i][j]) for j in range(9) ]
-                        for i in range(9)]
-                z3.print_matrix(r)
+        if condition[1] == "<" or condition[1] == "^":
+            s.add( second > first)
+        elif condition[1] == ">" or condition[1] == "v":
+            s.add( first > second)
+
+    
+    s.add(cells_c + row_res + col_res)
+    if s.check() == z3.sat:
+        m = s.model()
+        #print(m)
+        r = [ [ m.evaluate(cells[i * size + j]) for j in range(size) ]
+                for i in range(size)]
+        z3.print_matrix(r)
+    else:
+        print("Fail!")
 
 def solveKakuro(file):
     str_in = open(file).read()
@@ -262,11 +254,18 @@ def solveKakuro(file):
     #    print(r[i:24+i])
 
 if __name__ == '__main__':
-    if len(sys.argv) < 1:
+    if len(sys.argv) < 2:
         print("Missing Argument")
         exit(1)
-    
+        
     print("Hola, se usara el solver Z3")
-    solveFutoshiki(sys.argv[1])
+    if sys.argv[1] == "-s":
+        solveSudoku(sys.argv[2])
+    elif sys.argv[1] == "-k":
+        solveKakuro(sys.argv[2])
+    elif sys.argv[1] == "-f":
+        solveFutoshiki(sys.argv[2])
+
+
 
 

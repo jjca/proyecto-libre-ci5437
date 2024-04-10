@@ -14,8 +14,6 @@ Para ejecutar el proyecto, debe usarse Python con las librería `z3`. Puede usar
 
 ## Resolver Kakuro
 
-Por el momento es necesario añadir de forma hardcodeada la llamada a la función `solveKakuro` en el `main` del archivo `main.py`. 
-
 El formato de lectura y los casos de prueba son los que se usan en el proyecto https://github.com/heetbeet/constraint-puzzles.
 
 Cada archivo tiene un tablero de Kakuro en blanco, y el formato del tablero es el siguiente:
@@ -29,7 +27,7 @@ Cada archivo tiene un tablero de Kakuro en blanco, y el formato del tablero es e
 
 ## Ejemplo de ejecución
 
-```python3 main.py constraint-puzzles/kakuro-collection/kakuro-grandgames.net-23104.txt```
+```python3 main.py -k constraint-puzzles/kakuro-collection/kakuro-grandgames.net-23104.txt```
 
 ## Resolver Sudoku
 
@@ -43,4 +41,20 @@ El número 0 representa un espacio en blanco, mientras que los números 1 al 9 r
 
 ## Ejemplo de ejecución
 
- ```python3 main.py constraint-puzzles/sudoku-collection/gordon-royle-sudoku-17-entries.txt```
+ ```python3 main.py -s constraint-puzzles/sudoku-collection/gordon-royle-sudoku-17-entries.txt```
+
+## Resolver Futoshiki
+
+En el caso de Futoshiki, se creo un formato de lectura.
+
+Las lineas que contienen "|" son filas de casillas; y aquellas con "-" son los espacios entre las filas.
+
+Cada linea debe llenarse con valores de 1 al numero de columnas, sin repeticion. Aquellos que ya estan dispuestos al inicio, son valores de pista y aquellos
+espacios vacios entre "|  |", deben llenarse.
+
+Los simbolos "<",">" indican que se deben comparar los valores de los numeros en casillas adyacentes horizontalmente. Los simbolos "^" y "v" indican que
+se deben comparar los valores de los numeros adyacentes verticalmente.
+
+## Ejemplo de ejecución
+
+ ```python3 main.py -f constraint-puzzles/futoshiki-collection/futoshiki-1.txt```
