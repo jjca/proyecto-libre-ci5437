@@ -58,3 +58,10 @@ se deben comparar los valores de los numeros adyacentes verticalmente.
 ## Ejemplo de ejecución
 
  ```python3 main.py -f constraint-puzzles/futoshiki-collection/futoshiki-1.txt```
+
+
+## Glucose y CNF
+
+El Z3 Solver permite exportar las restricciones a un archivo DIMACS CNF. Este se genera usando el método `.dimacs` de la clase `Solver`. Actualmente ese código está comentado.
+
+Para ejecutar Glucose se usó un script, el cual lee la lista de archivos CNF creados para luego evaluarlos.
