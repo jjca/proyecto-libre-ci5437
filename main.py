@@ -271,7 +271,7 @@ if __name__ == '__main__':
         try:
             file = open(sys.argv[2])
             file.close()
-            solveKakuro(sys.argv[2])
+            solveSudoku(sys.argv[2])
         except:
             raise FileNotFoundError()
     elif (sys.argv[1].lower() == "-f"):
@@ -279,7 +279,7 @@ if __name__ == '__main__':
         try:
             file = open(sys.argv[2])
             file.close()
-            solveKakuro(sys.argv[2])
+            solveFutoshiki(sys.argv[2])
         except:
             raise FileNotFoundError()
     else: 
